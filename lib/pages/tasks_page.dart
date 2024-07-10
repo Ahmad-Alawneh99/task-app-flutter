@@ -78,6 +78,7 @@ class TasksPage extends StatelessWidget {
                         child: SingleChildScrollView(
                           child: Wrap(
                             direction: Axis.horizontal,
+                            runSpacing: -110,
                             children: _mapTasks(snapshot.data['tasks']).map((task) => Task(task: task, onDelete: () => {})).toList(),
                           ),
                         ),
