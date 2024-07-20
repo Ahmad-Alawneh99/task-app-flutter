@@ -42,9 +42,10 @@ class _TaskState extends State<Task> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(maxWidth: 280, maxHeight: 360),
+      decoration: BoxDecoration(color: Colors.yellow),
       child: Box(
         maxWidth: 280,
+        maxHeight: 212,
         children: [
           Text(widget.task.title,
             style: const TextStyle(fontSize: 28),
