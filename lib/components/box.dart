@@ -29,8 +29,8 @@ class Box extends StatelessWidget {
             spreadRadius: 0,
             blurRadius: 8,
             offset: const Offset(0, 0),
-        ),
-      ],
+          ),
+        ],
       ),
       child: Center(
         child: Column(

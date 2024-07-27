@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:task_app_flutter/components/nav_bar.dart';
 import 'package:task_app_flutter/components/task.dart';
 import 'package:task_app_flutter/utils/shared_prefs.dart';
 import 'package:http/http.dart' as http;
@@ -9,7 +10,7 @@ import 'dart:convert';
 class TasksPage extends StatelessWidget {
   const TasksPage({super.key});
 
-    Future<String?> _getToken () {
+  Future<String?> _getToken () {
     final existingToken = SharedPrefs().prefs.getString('task_app_token');
     return Future.value(existingToken);
   }
@@ -66,19 +67,7 @@ class TasksPage extends StatelessWidget {
                   constraints: const BoxConstraints(maxWidth: 1400),
                   child: Column(
                     children: [
-                      Container(
-                        decoration: BoxDecoration(color: Colors.red),
-                        constraints: const BoxConstraints(minWidth: double.infinity),
-                        child: Wrap(
-                          direction: Axis.horizontal,
-                          alignment: WrapAlignment.spaceBetween,
-                          runAlignment: WrapAlignment.center,
-                          children: [
-                            Text('Welcome back, ${snapshot.data['user']['name']}', textAlign: TextAlign.center,),
-                            Text('Another test label'),
-                          ],
-                        ),
-                      ),
+                      NavBar(name: snapshot.data['user']['name']),
                       const SizedBox(height: 16,),
                       Expanded(
                         child: SingleChildScrollView(
