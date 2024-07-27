@@ -79,12 +79,15 @@ class TasksPage extends StatelessWidget {
                           ],
                         ),
                       ),
+                      const SizedBox(height: 16,),
                       Expanded(
                         child: SingleChildScrollView(
-                          child: Container(
-                            decoration: BoxDecoration(color: Colors.blue),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
                             child: Wrap(
                               direction: Axis.horizontal,
+                              spacing: 16,
+                              runSpacing: 16,
                               children: _mapTasks(snapshot.data['tasks']).map((task) => Task(task: task, onDelete: () => {})).toList(),
                             ),
                           ),

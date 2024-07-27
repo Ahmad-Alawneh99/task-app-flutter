@@ -41,55 +41,53 @@ class _TaskState extends State<Task> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(color: Colors.yellow),
-      child: Box(
-        maxWidth: 280,
-        maxHeight: 212,
-        children: [
-          Text(widget.task.title,
-            style: const TextStyle(fontSize: 28),
+    return Box(
+      maxWidth: 280,
+      maxHeight: 212,
+      addMargins: false,
+      children: [
+        Text(widget.task.title,
+          style: const TextStyle(fontSize: 28),
+        ),
+        SizedBox(
+          height: 52,
+          child: Text(widget.task.description ?? '',
+              style: const TextStyle(fontSize: 12),
+              maxLines: 3,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
           ),
-          SizedBox(
-            height: 52,
-            child: Text(widget.task.description ?? '',
-                style: const TextStyle(fontSize: 12),
-                maxLines: 3,
-                softWrap: true,
-                overflow: TextOverflow.ellipsis,
+        ),
+        CheckboxListTile(
+            controlAffinity: ListTileControlAffinity.leading,
+            title: const Text('Completed'),
+            value: completed,
+            onChanged: (value) {
+              setState(() {
+                // @TODO: Call API to update
+                completed = value ?? false;
+              });
+            },
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: ElevatedButton(
+            onPressed: () => {},
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size(160, 40),
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
             ),
-          ),
-          CheckboxListTile(
-              controlAffinity: ListTileControlAffinity.leading,
-              title: const Text('Completed'),
-              value: completed,
-              onChanged: (value) {
-                setState(() {
-                  // @TODO: Call API to update
-                  completed = value ?? false;
-                });
-              },
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: ElevatedButton(
-              onPressed: () => {},
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(160, 40),
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text(
-                'Delete task',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold
-                ),
+            child: const Text(
+              'Delete task',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

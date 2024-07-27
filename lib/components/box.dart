@@ -4,12 +4,14 @@ class Box extends StatelessWidget {
   final List<Widget> children;
   final double maxWidth;
   final double maxHeight;
+  final bool addMargins;
 
   const Box({
     super.key,
     required this.children,
     this.maxWidth = 600,
-    this.maxHeight = double.infinity
+    this.maxHeight = double.infinity,
+    this.addMargins = true
   });
 
   @override
@@ -17,7 +19,7 @@ class Box extends StatelessWidget {
     return Container(
       constraints: BoxConstraints(maxWidth: maxWidth, maxHeight: maxHeight),
       padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.fromLTRB(16, 96, 16, 16),
+      margin: addMargins ? const EdgeInsets.fromLTRB(16, 96, 16, 16) : null,
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(1),
         borderRadius: BorderRadius.circular(8),
