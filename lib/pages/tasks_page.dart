@@ -66,20 +66,30 @@ class TasksPage extends StatelessWidget {
                   constraints: const BoxConstraints(maxWidth: 1400),
                   child: Column(
                     children: [
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Test label'),
-                          Text('Another test label'),
-                        ],
+                      Container(
+                        decoration: BoxDecoration(color: Colors.red),
+                        constraints: const BoxConstraints(minWidth: double.infinity),
+                        child: Wrap(
+                          direction: Axis.horizontal,
+                          alignment: WrapAlignment.spaceBetween,
+                          runAlignment: WrapAlignment.center,
+                          children: [
+                            Text('Welcome back, ${snapshot.data['user']['name']}', textAlign: TextAlign.center,),
+                            Text('Another test label'),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 16,),
                       Expanded(
                         child: SingleChildScrollView(
-                          child: Wrap(
-                            direction: Axis.horizontal,
-                            runSpacing: -110,
-                            children: _mapTasks(snapshot.data['tasks']).map((task) => Task(task: task, onDelete: () => {})).toList(),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Wrap(
+                              direction: Axis.horizontal,
+                              spacing: 16,
+                              runSpacing: 16,
+                              children: _mapTasks(snapshot.data['tasks']).map((task) => Task(task: task, onDelete: () => {})).toList(),
+                            ),
                           ),
                         ),
                       ),
