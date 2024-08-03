@@ -1,5 +1,8 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:task_app_flutter/components/box.dart';
+import 'package:task_app_flutter/utils/shared_prefs.dart';
 
 class TaskData {
   String id;
@@ -62,17 +65,64 @@ class _TaskState extends State<Task> {
             controlAffinity: ListTileControlAffinity.leading,
             title: const Text('Completed'),
             value: completed,
-            onChanged: (value) {
-              setState(() {
-                // @TODO: Call API to update
-                completed = value ?? false;
-              });
-            },
+            onChanged: (value) async {
+              try {
+                setState(() {
+                  completed = value ?? false;
+                });
+                final token = SharedPrefs().prefs.getString('task_app_token');
+                final body = json.encode({
+                  'taskId': widget.task.id,
+                  'completed': value,
+                });
+
+                final response = await http.put(
+                  Uri.parse('http://localhost:3030/tasks/update'),
+                  body: body,
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer $token',
+                  },
+                );
+
+                final formattedResponse = json.decode(response.body);
+
+                if (!formattedResponse['success']) {
+                  setState(() {
+                    completed = !value!;
+                  });
+                }
+              } on Exception catch (error) {
+                setState(() {
+                  completed = !value!;
+                });
+                print('Failed to update task');
+              }
+            }
         ),
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: ElevatedButton(
-            onPressed: () => {},
+            onPressed: () async {
+              try {
+                final token = SharedPrefs().prefs.getString('task_app_token');
+                final response = await http.delete(
+                  Uri.parse('http://localhost:3030/tasks/delete/${widget.task.id}'),
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer $token',
+                  },
+                );
+
+                final formattedResponse = json.decode(response.body);
+
+                if (formattedResponse['success']) {
+                  widget.onDelete(widget.task.id);
+                }
+              } on Exception catch (error) {
+                print('Failed to delete task');
+              }
+            },
             style: ElevatedButton.styleFrom(
               minimumSize: const Size(160, 40),
               backgroundColor: Colors.red,

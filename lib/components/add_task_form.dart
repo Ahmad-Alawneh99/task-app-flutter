@@ -37,6 +37,7 @@ class _AddTaskFormState extends State<AddTaskForm> {
             child: Column(
               children: [
                 Box(
+                  maxHeight: 460,
                   children: [
                     const Padding(
                       padding: EdgeInsets.only(bottom: 24),

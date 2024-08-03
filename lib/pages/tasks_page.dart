@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
-import 'package:task_app_flutter/components/task.dart';
+import 'package:task_app_flutter/components/nav_bar.dart';
+import 'package:task_app_flutter/components/task_list.dart';
 import 'package:task_app_flutter/utils/shared_prefs.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -9,7 +9,7 @@ import 'dart:convert';
 class TasksPage extends StatelessWidget {
   const TasksPage({super.key});
 
-    Future<String?> _getToken () {
+  Future<String?> _getToken () {
     final existingToken = SharedPrefs().prefs.getString('task_app_token');
     return Future.value(existingToken);
   }
@@ -46,12 +46,6 @@ class TasksPage extends StatelessWidget {
     };
   }
 
-  List<TaskData> _mapTasks(List<dynamic> apiTasks) {
-    return apiTasks.map((task) {
-      return TaskData(task['id'], task['title'], task['description'], task['completed'], task['ownerId'], task['createdAt'], task['updatedAt']);
-    }).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -66,33 +60,9 @@ class TasksPage extends StatelessWidget {
                   constraints: const BoxConstraints(maxWidth: 1400),
                   child: Column(
                     children: [
-                      Container(
-                        decoration: BoxDecoration(color: Colors.red),
-                        constraints: const BoxConstraints(minWidth: double.infinity),
-                        child: Wrap(
-                          direction: Axis.horizontal,
-                          alignment: WrapAlignment.spaceBetween,
-                          runAlignment: WrapAlignment.center,
-                          children: [
-                            Text('Welcome back, ${snapshot.data['user']['name']}', textAlign: TextAlign.center,),
-                            Text('Another test label'),
-                          ],
-                        ),
-                      ),
+                      NavBar(name: snapshot.data['user']['name']),
                       const SizedBox(height: 16,),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Wrap(
-                              direction: Axis.horizontal,
-                              spacing: 16,
-                              runSpacing: 16,
-                              children: _mapTasks(snapshot.data['tasks']).map((task) => Task(task: task, onDelete: () => {})).toList(),
-                            ),
-                          ),
-                        ),
-                      ),
+                      TaskList(tasks: snapshot.data['tasks']),
                     ],
                   )
                 ),
