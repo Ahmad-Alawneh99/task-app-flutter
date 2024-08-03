@@ -24,6 +24,48 @@ class _SignInFormState extends State<SignInForm> {
     return Future.value(existingToken);
   }
 
+  void _handleSignIn() async {
+    setState(() {
+      isFetching = true;
+    });
+
+    try {
+      final body = json.encode({
+        'email': emailController.text,
+        'password': passwordController.text,
+      });
+
+      final response = await http.post(
+        Uri.parse('http://localhost:3030/users/sign-in'),
+        body: body,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      );
+
+      final formattedResponse = json.decode(response.body);
+
+      if (formattedResponse['success']) {
+        await SharedPrefs().prefs.setString('task_app_token', formattedResponse['token']);
+        context.go('/');
+      } else {
+        setState(() {
+          isErrored = true;
+          errorMessage = formattedResponse['message'];
+        });
+      }
+    } on Exception catch (error) {
+      setState(() {
+        isErrored = true;
+        errorMessage = '$error';
+      });
+    }
+
+    setState(() {
+      isFetching = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -73,47 +115,7 @@ class _SignInFormState extends State<SignInForm> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: ElevatedButton(
-                        onPressed: isFetching ? null: () async {
-                          setState(() {
-                            isFetching = true;
-                          });
-
-                          try {
-                            final body = json.encode({
-                              'email': emailController.text,
-                              'password': passwordController.text,
-                            });
-
-                            final response = await http.post(
-                              Uri.parse('http://localhost:3030/users/sign-in'),
-                              body: body,
-                              headers: {
-                                'Content-Type': 'application/json'
-                              }
-                            );
-
-                            final formattedResponse = json.decode(response.body);
-
-                            if (formattedResponse['success']) {
-                              await SharedPrefs().prefs.setString('task_app_token', formattedResponse['token']);
-                              context.go('/');
-                            } else {
-                              setState(() {
-                                isErrored = true;
-                                errorMessage = formattedResponse['message'];
-                              });
-                            }
-                          } on Exception catch (error) {
-                            setState(() {
-                              isErrored = true;
-                              errorMessage = '$error';
-                            });
-                          }
-
-                          setState(() {
-                            isFetching = false;
-                          });
-                        },
+                        onPressed: isFetching ? null: _handleSignIn,
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size(220, 48)
                         ),
