@@ -25,6 +25,49 @@ class _SignUpFormState extends State<SignUpForm> {
     return Future.value(existingToken);
   }
 
+  void _handleSignUp() async {
+    setState(() {
+      isFetching = true;
+    });
+
+    try {
+      final body = json.encode({
+        'name': nameController.text,
+        'email': emailController.text,
+        'password': passwordController.text,
+      });
+
+      final response = await http.post(
+        Uri.parse('http://localhost:3030/users/sign-up'),
+        body: body,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      );
+
+      final formattedResponse = json.decode(response.body);
+
+      if (formattedResponse['success']) {
+        await SharedPrefs().prefs.setString('task_app_token', formattedResponse['token']);
+        context.go('/');
+      } else {
+        setState(() {
+          isErrored = true;
+          errorMessage = formattedResponse['message'];
+        });
+      }
+    } on Exception catch (error) {
+      setState(() {
+        isErrored = true;
+        errorMessage = '$error';
+      });
+    }
+
+    setState(() {
+      isFetching = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -84,48 +127,7 @@ class _SignUpFormState extends State<SignUpForm> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: ElevatedButton(
-                        onPressed: isFetching ? null: () async {
-                          setState(() {
-                            isFetching = true;
-                          });
-
-                          try {
-                            final body = json.encode({
-                              'name': nameController.text,
-                              'email': emailController.text,
-                              'password': passwordController.text,
-                            });
-
-                            final response = await http.post(
-                              Uri.parse('http://localhost:3030/users/sign-up'),
-                              body: body,
-                              headers: {
-                                'Content-Type': 'application/json'
-                              }
-                            );
-
-                            final formattedResponse = json.decode(response.body);
-
-                            if (formattedResponse['success']) {
-                              await SharedPrefs().prefs.setString('task_app_token', formattedResponse['token']);
-                              context.go('/');
-                            } else {
-                              setState(() {
-                                isErrored = true;
-                                errorMessage = formattedResponse['message'];
-                              });
-                            }
-                          } on Exception catch (error) {
-                            setState(() {
-                              isErrored = true;
-                              errorMessage = '$error';
-                            });
-                          }
-
-                          setState(() {
-                            isFetching = false;
-                          });
-                        },
+                        onPressed: isFetching ? null: _handleSignUp,
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size(220, 48)
                         ),

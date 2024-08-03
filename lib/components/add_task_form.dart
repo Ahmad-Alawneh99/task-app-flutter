@@ -26,6 +26,49 @@ class _AddTaskFormState extends State<AddTaskForm> {
     return Future.value(existingToken);
   }
 
+  void _addTask(String token) async {
+    setState(() {
+      isFetching = true;
+    });
+
+    try {
+      final body = json.encode({
+        'title': titleController.text,
+        'description': descriptionController.text,
+        'completed': statusController,
+      });
+
+      final response = await http.post(
+        Uri.parse('http://localhost:3030/tasks/create'),
+        body: body,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      final formattedResponse = json.decode(response.body);
+
+      if (formattedResponse['success']) {
+        context.go('/');
+      } else {
+        setState(() {
+          isErrored = true;
+          errorMessage = formattedResponse['message'];
+        });
+      }
+    } on Exception catch (error) {
+      setState(() {
+        isErrored = true;
+        errorMessage = '$error';
+      });
+    }
+
+    setState(() {
+      isFetching = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -91,48 +134,7 @@ class _AddTaskFormState extends State<AddTaskForm> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: ElevatedButton(
-                        onPressed: isFetching ? null: () async {
-                          setState(() {
-                            isFetching = true;
-                          });
-
-                          try {
-                            final body = json.encode({
-                              'title': titleController.text,
-                              'description': descriptionController.text,
-                              'completed': statusController,
-                            });
-
-                            final response = await http.post(
-                              Uri.parse('http://localhost:3030/tasks/create'),
-                              body: body,
-                              headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': 'Bearer ${snapshot.data}',
-                              },
-                            );
-
-                            final formattedResponse = json.decode(response.body);
-
-                            if (formattedResponse['success']) {
-                              context.go('/');
-                            } else {
-                              setState(() {
-                                isErrored = true;
-                                errorMessage = formattedResponse['message'];
-                              });
-                            }
-                          } on Exception catch (error) {
-                            setState(() {
-                              isErrored = true;
-                              errorMessage = '$error';
-                            });
-                          }
-
-                          setState(() {
-                            isFetching = false;
-                          });
-                        },
+                        onPressed: isFetching ? null: () => _addTask(snapshot.data ?? ''),
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size(220, 48)
                         ),

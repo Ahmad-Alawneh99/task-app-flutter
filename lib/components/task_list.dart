@@ -47,12 +47,13 @@ class _TaskListState extends State<TaskList> {
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Wrap(
+          child: tasks.isNotEmpty ?
+          Wrap(
             direction: Axis.horizontal,
             spacing: 16,
             runSpacing: 16,
             children: tasks.map((task) => Task(task: task, onDelete: _onTaskDeleted)).toList(),
-          ),
+          ): const Center(child: Text('No tasks! Start by adding a task'),),
         ),
       ),
     );
