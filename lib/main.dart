@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => TasksPage(),
+        builder: (context, state) => const TasksPage(),
       ),
       GoRoute(
         path: '/sign-up',
