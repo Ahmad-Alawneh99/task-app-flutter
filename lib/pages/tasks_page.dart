@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:task_app_flutter/components/nav_bar.dart';
-import 'package:task_app_flutter/components/task.dart';
+import 'package:task_app_flutter/components/task_list.dart';
 import 'package:task_app_flutter/utils/shared_prefs.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -47,12 +46,6 @@ class TasksPage extends StatelessWidget {
     };
   }
 
-  List<TaskData> _mapTasks(List<dynamic> apiTasks) {
-    return apiTasks.map((task) {
-      return TaskData(task['id'], task['title'], task['description'], task['completed'], task['ownerId'], task['createdAt'], task['updatedAt']);
-    }).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -69,19 +62,7 @@ class TasksPage extends StatelessWidget {
                     children: [
                       NavBar(name: snapshot.data['user']['name']),
                       const SizedBox(height: 16,),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Wrap(
-                              direction: Axis.horizontal,
-                              spacing: 16,
-                              runSpacing: 16,
-                              children: _mapTasks(snapshot.data['tasks']).map((task) => Task(task: task, onDelete: () => {})).toList(),
-                            ),
-                          ),
-                        ),
-                      ),
+                      TaskList(tasks: snapshot.data['tasks']),
                     ],
                   )
                 ),
