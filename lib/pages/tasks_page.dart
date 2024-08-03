@@ -20,7 +20,7 @@ class TasksPage extends StatelessWidget {
       return null;
     }
 
-    final tasksResponse = await http.get(
+    final tasksFuture = http.get(
       Uri.parse('http://localhost:3030/tasks/getAll'),
       headers: {
         'Content-Type': 'application/json',
@@ -28,9 +28,7 @@ class TasksPage extends StatelessWidget {
       },
     );
 
-    final formattedTasksResponse = json.decode(tasksResponse.body);
-
-    final userResponse = await http.get(
+    final userFuture = http.get(
       Uri.parse('http://localhost:3030/users/me'),
       headers: {
         'Content-Type': 'application/json',
@@ -38,7 +36,13 @@ class TasksPage extends StatelessWidget {
       },
     );
 
-    final formattedUserResponse = json.decode(userResponse.body);
+    final apiResponses = await Future.wait([
+      tasksFuture,
+      userFuture,
+    ] as Iterable<Future>);
+
+    final formattedTasksResponse = json.decode(apiResponses[0].body);
+    final formattedUserResponse = json.decode(apiResponses[1].body);
 
     return {
       'tasks': formattedTasksResponse['tasks'] ?? [],
